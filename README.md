@@ -9,7 +9,8 @@ Script to generate Pantip topics for TooPantip App.
 
 ## Cron
 ```cron
-    */5 * * * * scrapy runspider pantip_spider.py -o /var/www/html/topics.json
+    */5 * * * * scrapy runspider /home/ubuntu/toopantip-crawler/pantip_spider.py -o \
+    /home/ubuntu/topics.json >> crawler.log
 ```
 
 ## Check 
