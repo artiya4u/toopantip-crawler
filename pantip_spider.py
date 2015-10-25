@@ -10,7 +10,6 @@ class PantipSpider(scrapy.Spider):
 
     def parse(self, response):
         for url in response.xpath('//a/@href').re(r'/topic/[0-9]+'):
-            print(response.urljoin(url))
             yield scrapy.Request(response.urljoin(url), self.parse_titles)
 
     def parse_titles(self, response):
@@ -20,6 +19,8 @@ class PantipSpider(scrapy.Spider):
         item['description'] = response.xpath("//meta[@property='og:description']/@content").extract()[0]
         item['proof'] = response.css('span.like-score::text').extract()[0]
         item['image'] = response.xpath("//meta[@property='og:image']/@content").extract()[0]
+        if item['image'] == 'http://ptcdn.info/pantip/pantip_logo.png':
+            item['image'] = ''
 
         item['timestamp'] = datetime.utcnow().isoformat(' ')
         item['url'] = response.xpath("//meta[@property='og:url']/@content").extract()[0]
