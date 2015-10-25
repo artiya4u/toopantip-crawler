@@ -26,12 +26,11 @@ class PantipSpider(scrapy.Spider):
         item['type'] = response.xpath("//meta[@property='og:type']/@content").extract()[0]
         item['title'] = response.xpath("//meta[@property='og:title']/@content").extract()[0]
         item['id'] = item['url'].rsplit('/', 1)[-1]
-        item['category'] = u'ทั่วไป'
+        item['category'] = u'ไม่ระบุ'
         tag = response.css("a.tag-item::text").extract()[0]
         if tag:
             item['category'] = tag
 
-        item['article_url'] = item['url']
         yield item
 
 
@@ -49,4 +48,3 @@ class TopicItem(scrapy.Item):
     id = scrapy.Field()
 
     category = scrapy.Field()
-    article_url = scrapy.Field()
