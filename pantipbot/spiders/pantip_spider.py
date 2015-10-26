@@ -22,10 +22,12 @@ class PantipSpider(scrapy.Spider):
         item['image'] = response.xpath("//meta[@property='og:image']/@content").extract()[0]
 
         item['timestamp'] = datetime.utcnow().isoformat(' ')
-        item['url'] = response.xpath("//meta[@property='og:url']/@content").extract()[0]
+        full_url = response.xpath("//meta[@property='og:url']/@content").extract()[0]
+        tid = full_url.rsplit('/', 1)[-1]
+        item['id'] = tid
+        item['url'] = 'http://m.pantip.com/topic/' + tid
         item['type'] = response.xpath("//meta[@property='og:type']/@content").extract()[0]
         item['title'] = response.xpath("//meta[@property='og:title']/@content").extract()[0]
-        item['id'] = item['url'].rsplit('/', 1)[-1]
 
         try:
             tag = response.css("a.tag-item::text").extract()[0]
