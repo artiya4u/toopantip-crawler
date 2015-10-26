@@ -6,7 +6,7 @@ from pantipbot.items import TopicItem
 
 class PantipSpider(scrapy.Spider):
     name = 'pantipspider'
-    start_urls = ['http://pantip.com', 'http://pantip.com/forum']
+    start_urls = ['http://pantip.com/cafe', 'http://pantip.com/forum']
     allowed_domains = ["pantip.com"]
 
     def parse(self, response):

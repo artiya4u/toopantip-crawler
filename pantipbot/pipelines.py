@@ -1,16 +1,18 @@
 from scrapy.exceptions import DropItem
 
 
-class FilterWordsPipeline(object):
-    """A pipeline for filtering out items which contain certain words in their
-    description"""
+class FilterExistTopicPipeline(object):
+    """
+        Filter exist topic item by id.
+    """
 
     # put all words in lowercase
-    words_to_filter = []
+    topic_ids = set()
 
     def process_item(self, item, spider):
-        for word in self.words_to_filter:
-            if word in unicode(item['description']).lower():
-                raise DropItem("Contains forbidden word: %s" % word)
+        for tid in self.topic_ids:
+            if tid in item['id']:
+                raise DropItem("Already have topic: %s" % tid)
         else:
+            self.topic_ids.add(item['id'])
             return item
