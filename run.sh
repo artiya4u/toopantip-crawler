@@ -5,17 +5,13 @@ PATH=$PATH:/usr/local/bin
 export PATH
 
 file=topics-temp.json
-minimumsize=200
-
-while true; do
-    # Run crawler.
-    scrapy runspider pantip_spider.py -o $file
-    actualsize=$(wc -c <"$file")
-    if [ $actualsize -ge $minimumsize ]; then
-        # Move temp file to real file.
-        mv -f $file topics.json
-        break
-    fi
-done
+minimum_size=200
+rm ${file}
+scrapy runspider pantip_spider.py -o ${file} --logfile pantip_spider.log
+actual_size=$(wc -c <"$file")
+if [ ${actual_size} -ge ${minimum_size} ]; then
+    # Move temp file to real file.
+    mv -f ${file} topics.json
+fi
 
 
