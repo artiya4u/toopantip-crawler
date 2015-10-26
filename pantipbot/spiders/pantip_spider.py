@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import scrapy
-from scrapy.crawler import CrawlerProcess
+from pantipbot.items import TopicItem
 
 
 class PantipSpider(scrapy.Spider):
     name = 'pantipspider'
-    start_urls = ['http://pantip.com/forum']
+    start_urls = ['http://pantip.com', 'http://pantip.com/forum']
     allowed_domains = ["pantip.com"]
 
     def parse(self, response):
@@ -34,20 +34,3 @@ class PantipSpider(scrapy.Spider):
             item['category'] = u'ไม่ระบุ'
 
         yield item
-
-
-class TopicItem(scrapy.Item):
-    feed = scrapy.Field()
-    favicon = scrapy.Field()
-    description = scrapy.Field()
-    proof = scrapy.Field()
-    image = scrapy.Field()
-
-    timestamp = scrapy.Field()
-    url = scrapy.Field()
-    type = scrapy.Field()
-    title = scrapy.Field()
-    id = scrapy.Field()
-
-    category = scrapy.Field()
-

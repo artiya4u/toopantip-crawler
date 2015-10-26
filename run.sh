@@ -7,7 +7,7 @@ export PATH
 file=topics-temp.json
 minimum_size=200
 rm ${file}
-scrapy runspider pantip_spider.py -o ${file} --logfile pantip_spider.log
+scrapy crawl pantipspider -o ${file} --logfile pantip_spider.log
 actual_size=$(wc -c <"$file")
 if [ ${actual_size} -ge ${minimum_size} ]; then
     # Move temp file to real file.
