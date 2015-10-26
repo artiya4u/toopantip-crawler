@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import scrapy
+from scrapy.crawler import CrawlerProcess
 
 
 class PantipSpider(scrapy.Spider):
@@ -25,10 +26,12 @@ class PantipSpider(scrapy.Spider):
         item['type'] = response.xpath("//meta[@property='og:type']/@content").extract()[0]
         item['title'] = response.xpath("//meta[@property='og:title']/@content").extract()[0]
         item['id'] = item['url'].rsplit('/', 1)[-1]
-        item['category'] = u'ไม่ระบุ'
-        tag = response.css("a.tag-item::text").extract()[0]
-        if tag:
+
+        try:
+            tag = response.css("a.tag-item::text").extract()[0]
             item['category'] = tag
+        except IndexError:
+            item['category'] = u'ไม่ระบุ'
 
         yield item
 
@@ -47,3 +50,12 @@ class TopicItem(scrapy.Item):
     id = scrapy.Field()
 
     category = scrapy.Field()
+
+
+process = CrawlerProcess({
+    'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+})
+
+process.crawl(PantipSpider)
+process.start()
+
