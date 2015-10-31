@@ -2,6 +2,9 @@
 
 Script to generate Pantip topics for TooPantip App.
 
+## Requirements
+* scrapy 2
+
 ## Run
 ```bash
     ./run.sh
