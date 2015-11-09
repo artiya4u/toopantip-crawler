@@ -1,21 +1,31 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+import json
+
 import scrapy
+
 from pantipbot.items import TopicItem
 
 
 class PantipSpider(scrapy.Spider):
     name = 'pantipspider'
-    start_urls = ['http://pantip.com/cafe', 'http://pantip.com/forum']
+    start_urls = ['http://pantip.com/cafe', 'http://pantip.com/forum',
+                  'http://pantip.com/home/ajax_pantip_trend?p=1']
     allowed_domains = ["pantip.com"]
 
     def parse(self, response):
-        for url in response.xpath('//a/@href').re(r'/topic/[0-9]+'):
-            yield scrapy.Request(response.urljoin(url), self.parse_titles)
+        if response.url in ['http://pantip.com/cafe', 'http://pantip.com/forum']:
+            for url in response.xpath('//a/@href').re(r'/topic/[0-9]+'):
+                yield scrapy.Request(response.urljoin(url), self.parse_topic)
+        elif response.url in ['http://pantip.com/home/ajax_pantip_trend?p=1']:
+            json_response = json.loads(response.body)
+            for topic in json_response['trend']:
+                yield scrapy.Request(response.urljoin('http://pantip.com/topic/' + topic['topic_id']), self.parse_topic)
 
-    def parse_titles(self, response):
+    @staticmethod
+    def parse_topic(response):
         item = TopicItem()
-        item['feed'] = 'http://pantip.com/forum'
+        item['feed'] = 'http://pantip.com/'
         item['favicon'] = response.urljoin(response.css('div.display-post-avatar > a > img::attr(src)').extract()[0])
         item['description'] = response.xpath("//meta[@property='og:description']/@content").extract()[0]
         item['proof'] = response.css('span.like-score::text').extract()[0]
