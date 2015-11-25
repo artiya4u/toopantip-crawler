@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import json
+from datetime import datetime
 
 import scrapy
 
@@ -9,15 +9,17 @@ from pantipbot.items import TopicItem
 
 class PantipSpider(scrapy.Spider):
     name = 'pantipspider'
-    start_urls = ['http://pantip.com/cafe', 'http://pantip.com/forum',
+    start_urls = ['http://pantip.com/forum', 'http://m.pantip.com/desktop/',
                   'http://pantip.com/home/ajax_pantip_trend?p=1']
     allowed_domains = ["pantip.com"]
 
     def parse(self, response):
-        if response.url in ['http://pantip.com/cafe', 'http://pantip.com/forum']:
+        print('URL:' + response.url)
+        if response.url in ['http://pantip.com/forum', 'http://pantip.com/']:
             for url in response.xpath('//a/@href').re(r'/topic/[0-9]+'):
                 yield scrapy.Request(response.urljoin(url), self.parse_topic)
-        elif response.url in ['http://pantip.com/home/ajax_pantip_trend?p=1']:
+
+        if response.url in ['http://pantip.com/home/ajax_pantip_trend?p=1']:
             json_response = json.loads(response.body)
             for topic in json_response['trend']:
                 yield scrapy.Request(response.urljoin('http://pantip.com/topic/' + topic['topic_id']), self.parse_topic)
