@@ -15,14 +15,14 @@ class PantipSpider(scrapy.Spider):
 
     def parse(self, response):
         print('URL:' + response.url)
-        if response.url in ['http://pantip.com/forum', 'http://pantip.com/']:
-            for url in response.xpath('//a/@href').re(r'/topic/[0-9]+'):
-                yield scrapy.Request(response.urljoin(url), self.parse_topic)
 
         if response.url in ['http://pantip.com/home/ajax_pantip_trend?p=1']:
             json_response = json.loads(response.body)
             for topic in json_response['trend']:
                 yield scrapy.Request(response.urljoin('http://pantip.com/topic/' + topic['topic_id']), self.parse_topic)
+        else:
+            for url in response.xpath('//a/@href').re(r'/topic/[0-9]+'):
+                yield scrapy.Request(response.urljoin(url), self.parse_topic)
 
     @staticmethod
     def parse_topic(response):
