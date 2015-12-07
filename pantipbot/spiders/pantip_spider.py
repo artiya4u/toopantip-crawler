@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import HTMLParser
 import json
 from datetime import datetime
 
@@ -12,6 +13,7 @@ class PantipSpider(scrapy.Spider):
     start_urls = ['http://pantip.com/forum', 'http://m.pantip.com/desktop/',
                   'http://pantip.com/home/ajax_pantip_trend?p=1']
     allowed_domains = ["pantip.com"]
+    html_parser = HTMLParser.HTMLParser()
 
     def parse(self, response):
         print('URL:' + response.url)
@@ -24,12 +26,12 @@ class PantipSpider(scrapy.Spider):
             for url in response.xpath('//a/@href').re(r'/topic/[0-9]+'):
                 yield scrapy.Request(response.urljoin(url), self.parse_topic)
 
-    @staticmethod
-    def parse_topic(response):
+    def parse_topic(self, response):
         item = TopicItem()
         item['feed'] = 'http://pantip.com/'
         item['favicon'] = response.urljoin(response.css('div.display-post-avatar > a > img::attr(src)').extract()[0])
-        item['description'] = response.xpath("//meta[@property='og:description']/@content").extract()[0]
+        item['description'] = self.html_parser.unescape(
+            response.xpath("//meta[@property='og:description']/@content").extract()[0])
         item['proof'] = response.css('span.like-score::text').extract()[0]
         item['image'] = response.xpath("//meta[@property='og:image']/@content").extract()[0]
 
